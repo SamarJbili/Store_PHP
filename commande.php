@@ -24,27 +24,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (empty($adresse)) {
         $erreur = "Veuillez saisir une adresse de livraison.";
     } else {
-        try {
-            $c = new Commande();
-            $id_commande = $c->creerCommande(
-                intval($_SESSION['id_utilisateur']),
-                $adresse,
-                $total,
-                $panier
-            );
+        $c = new Commande();
+        $id_commande = $c->creerCommande(
+            intval($_SESSION['id_utilisateur']),
+            $adresse,
+            $total,
+            $panier
+        );
 
-            require_once 'connexion.php';
-            $cnx = new connexion();
-            $pdo = $cnx->CNXbase();
-            $pdo->prepare("DELETE FROM panier WHERE id_utilisateur = :u")
-                ->execute([':u' => $_SESSION['id_utilisateur']]);
-            $_SESSION['panier'] = [];
-
-            $succes = true;
-
-        } catch (Exception $e) {
-            $erreur = "Erreur lors de la commande : " . $e->getMessage();
-        }
+        require_once 'connexion.php';
+        $cnx = new connexion();
+        $pdo = $cnx->CNXbase();
+        $id_user = intval($_SESSION['id_utilisateur']);
+        $pdo->exec("DELETE FROM panier WHERE id_utilisateur = $id_user");
+        $_SESSION['panier'] = [];
+        $succes = true;
     }
 }
 

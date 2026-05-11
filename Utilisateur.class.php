@@ -1,9 +1,7 @@
 <?php
 
-
 class Utilisateur
 {
-    
     public $id_utilisateur;
     public $nom;
     public $prenom;
@@ -21,7 +19,7 @@ class Utilisateur
         $hash = password_hash($this->mot_de_passe, PASSWORD_DEFAULT);
         $req  = "INSERT INTO utilisateurs (nom, prenom, email, mot_de_passe, telephone, adresse, role)
                  VALUES ('$this->nom','$this->prenom','$this->email','$hash','$this->telephone','$this->adresse','client')";
-        $pdo->exec($req) or print_r($pdo->errorInfo());
+        $pdo->exec($req);
     }
 
     function getUtilisateur($id)
@@ -30,7 +28,7 @@ class Utilisateur
         $cnx = new connexion();
         $pdo = $cnx->CNXbase();
         $req = "SELECT * FROM utilisateurs WHERE id_utilisateur=$id";
-        $res = $pdo->query($req) or print_r($pdo->errorInfo());
+        $res = $pdo->query($req);
         return $res;
     }
 
@@ -40,7 +38,7 @@ class Utilisateur
         $cnx = new connexion();
         $pdo = $cnx->CNXbase();
         $req = "SELECT * FROM utilisateurs WHERE email='$email'";
-        $res = $pdo->query($req) or print_r($pdo->errorInfo());
+        $res = $pdo->query($req);
         return $res;
     }
 
@@ -52,7 +50,7 @@ class Utilisateur
         $req = "UPDATE utilisateurs SET nom='$this->nom', prenom='$this->prenom',
                 email='$this->email', telephone='$this->telephone', adresse='$this->adresse'
                 WHERE id_utilisateur=$id";
-        $pdo->exec($req) or print_r($pdo->errorInfo());
+        $pdo->exec($req);
     }
 
     function changerMotDePasse($id)
@@ -62,7 +60,7 @@ class Utilisateur
         $pdo  = $cnx->CNXbase();
         $hash = password_hash($this->mot_de_passe, PASSWORD_DEFAULT);
         $req  = "UPDATE utilisateurs SET mot_de_passe='$hash' WHERE id_utilisateur=$id";
-        $pdo->exec($req) or print_r($pdo->errorInfo());
+        $pdo->exec($req);
     }
 
     function emailExiste($email)

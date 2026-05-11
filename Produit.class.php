@@ -1,6 +1,5 @@
 <?php
 
-
 class Produit
 {
     public $id_produit;
@@ -18,7 +17,7 @@ class Produit
         $pdo = $cnx->CNXbase();
         $req = "INSERT INTO produits (nom, description, prix, stock, id_categorie, image)
                 VALUES ('$this->nom','$this->description','$this->prix','$this->stock','$this->id_categorie','$this->image')";
-        $pdo->exec($req) or print_r($pdo->errorInfo());
+        $pdo->exec($req);
     }
 
     function listeProduits()
@@ -30,7 +29,7 @@ class Produit
                 FROM produits p
                 LEFT JOIN categories c ON p.id_categorie = c.id_categorie
                 ORDER BY p.id_produit DESC";
-        $res = $pdo->query($req) or print_r($pdo->errorInfo());
+        $res = $pdo->query($req);
         return $res;
     }
 
@@ -43,7 +42,7 @@ class Produit
                 FROM produits p
                 LEFT JOIN categories c ON p.id_categorie = c.id_categorie
                 WHERE p.id_produit = $id";
-        $res = $pdo->query($req) or print_r($pdo->errorInfo());
+        $res = $pdo->query($req);
         return $res;
     }
 
@@ -52,14 +51,13 @@ class Produit
         require_once 'connexion.php';
         $cnx = new connexion();
         $pdo = $cnx->CNXbase();
-        $terme = "%$mot_cle%";
-        $req = $pdo->prepare("SELECT p.*, c.nom AS categorie
+        $req = "SELECT p.*, c.nom AS categorie
                 FROM produits p
                 LEFT JOIN categories c ON p.id_categorie = c.id_categorie
-                WHERE p.nom LIKE ? OR p.description LIKE ?
-                ORDER BY p.nom ASC");
-        $req->execute([$terme, $terme]);
-        return $req;
+                WHERE p.nom LIKE '%$mot_cle%' OR p.description LIKE '%$mot_cle%'
+                ORDER BY p.nom ASC";
+        $res = $pdo->query($req);
+        return $res;
     }
 
     function getParCategorie($id_categorie)
@@ -72,7 +70,7 @@ class Produit
                 LEFT JOIN categories c ON p.id_categorie = c.id_categorie
                 WHERE p.id_categorie = $id_categorie
                 ORDER BY p.nom ASC";
-        $res = $pdo->query($req) or print_r($pdo->errorInfo());
+        $res = $pdo->query($req);
         return $res;
     }
 
@@ -84,7 +82,7 @@ class Produit
         $req = "UPDATE produits SET nom='$this->nom', description='$this->description',
                 prix='$this->prix', stock='$this->stock', id_categorie='$this->id_categorie',
                 image='$this->image' WHERE id_produit=$id";
-        $pdo->exec($req) or print_r($pdo->errorInfo());
+        $pdo->exec($req);
     }
 
     function modifierProduitSansImage($id)
@@ -95,7 +93,7 @@ class Produit
         $req = "UPDATE produits SET nom='$this->nom', description='$this->description',
                 prix='$this->prix', stock='$this->stock', id_categorie='$this->id_categorie'
                 WHERE id_produit=$id";
-        $pdo->exec($req) or print_r($pdo->errorInfo());
+        $pdo->exec($req);
     }
 
     function supprimerProduit($id)

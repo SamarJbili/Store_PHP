@@ -30,7 +30,6 @@ if (isset($_POST['envoyer'])) {
         } else {
             $p->image    = uniqid('prod_') . '.' . $ext;
             $dossier     = '../../images/produits/';
-            if (!is_dir($dossier)) mkdir($dossier, 0755, true);
             move_uploaded_file($_FILES['image']['tmp_name'], $dossier . $p->image);
         }
     }

@@ -12,9 +12,8 @@ if (isset($_GET['ajouter'])) {
     $id_produit = intval($_GET['ajouter']);
 
     if ($id_produit > 0) {
-        $stmt = $pdo->prepare("SELECT * FROM produits WHERE id_produit = :id");
-        $stmt->execute([':id' => $id_produit]);
-        $produit = $stmt->fetch(PDO::FETCH_ASSOC);
+        $res = $pdo->query("SELECT * FROM produits WHERE id_produit = $id_produit");
+        $produit = $res->fetch(PDO::FETCH_ASSOC);
 
         if ($produit && $produit['stock'] > 0) {
             if (!isset($_SESSION['panier'])) $_SESSION['panier'] = [];
@@ -28,18 +27,15 @@ if (isset($_GET['ajouter'])) {
                 'quantite'   => $new_qty,
             ];
 
-            $stmt2 = $pdo->prepare("
-                INSERT INTO panier (id_utilisateur, id_produit, quantite, date_ajout)
-                VALUES (:id_user, :id_produit, 1, NOW())
-                ON DUPLICATE KEY UPDATE
-                    quantite   = LEAST(quantite + 1, :stock),
-                    date_ajout = NOW()
-            ");
-            $stmt2->execute([
-                ':id_user'    => $id_user,
-                ':id_produit' => $id_produit,
-                ':stock'      => (int)$produit['stock'],
-            ]);
+            $stock = (int)$produit['stock'];
+            $existe = $pdo->query("SELECT quantite FROM panier WHERE id_utilisateur=$id_user AND id_produit=$id_produit");
+            $data = $existe->fetch(PDO::FETCH_ASSOC);
+            if ($data) {
+                $q = min(((int)$data['quantite']) + 1, $stock);
+                $pdo->exec("UPDATE panier SET quantite=$q, date_ajout=NOW() WHERE id_utilisateur=$id_user AND id_produit=$id_produit");
+            } else {
+                $pdo->exec("INSERT INTO panier (id_utilisateur, id_produit, quantite, date_ajout) VALUES ($id_user, $id_produit, 1, NOW())");
+            }
         }
     }
 
@@ -50,8 +46,7 @@ if (isset($_GET['ajouter'])) {
 if (isset($_GET['supprimer'])) {
     $id = intval($_GET['supprimer']);
 
-    $stmt = $pdo->prepare("DELETE FROM panier WHERE id_utilisateur = :u AND id_produit = :p");
-    $stmt->execute([':u' => $id_user, ':p' => $id]);
+    $pdo->exec("DELETE FROM panier WHERE id_utilisateur = $id_user AND id_produit = $id");
     unset($_SESSION['panier'][$id]);
 
     header('Location: panier.php'); exit;
@@ -59,8 +54,7 @@ if (isset($_GET['supprimer'])) {
 
 
 if (isset($_GET['vider'])) {
-    $stmt = $pdo->prepare("DELETE FROM panier WHERE id_utilisateur = :u");
-    $stmt->execute([':u' => $id_user]);
+    $pdo->exec("DELETE FROM panier WHERE id_utilisateur = $id_user");
     $_SESSION['panier'] = [];
     header('Location: panier.php'); exit;
 }
@@ -71,12 +65,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_qty'])) {
         $id  = intval($id);
         $qty = intval($qty);
         if ($qty <= 0) {
-            $stmt = $pdo->prepare("DELETE FROM panier WHERE id_utilisateur = :u AND id_produit = :p");
-            $stmt->execute([':u' => $id_user, ':p' => $id]);
+            $pdo->exec("DELETE FROM panier WHERE id_utilisateur = $id_user AND id_produit = $id");
             unset($_SESSION['panier'][$id]);
         } else {
-            $stmt = $pdo->prepare("UPDATE panier SET quantite = :q WHERE id_utilisateur = :u AND id_produit = :p");
-            $stmt->execute([':q' => $qty, ':u' => $id_user, ':p' => $id]);
+            $pdo->exec("UPDATE panier SET quantite = $qty WHERE id_utilisateur = $id_user AND id_produit = $id");
             if (isset($_SESSION['panier'][$id])) $_SESSION['panier'][$id]['quantite'] = $qty;
         }
     }
@@ -84,14 +76,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_qty'])) {
 }
 
 
-$stmt = $pdo->prepare("
+$res = $pdo->query("
     SELECT p.id_produit, pr.nom, pr.prix, pr.image, p.quantite
     FROM panier p
     JOIN produits pr ON pr.id_produit = p.id_produit
-    WHERE p.id_utilisateur = :u
+    WHERE p.id_utilisateur = $id_user
 ");
-$stmt->execute([':u' => $id_user]);
-$lignes = $stmt->fetchAll(PDO::FETCH_ASSOC);
+$lignes = $res->fetchAll(PDO::FETCH_ASSOC);
 
 $_SESSION['panier'] = [];
 foreach ($lignes as $ligne) {
