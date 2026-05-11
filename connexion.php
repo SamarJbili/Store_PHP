@@ -1,7 +1,5 @@
 <?php
-// ================================================
-// connexion.php - Classe connexion style TP3
-// ================================================
+
 class connexion
 {
     public function CNXbase()

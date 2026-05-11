@@ -26,5 +26,4 @@ if (isset($_POST['envoyer'])) {
     }
 }
 
-/* Afficher le formulaire */
 require_once 'inscriptionForm.php';

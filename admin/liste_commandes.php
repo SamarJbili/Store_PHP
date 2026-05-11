@@ -6,7 +6,7 @@ require_once '../Commande.class.php';
 
 $c = new Commande();
 
-// Changer statut
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['changer_statut'])) {
     $c->changerStatut(intval($_POST['id_commande']), $_POST['nouveau_statut']);
     header('Location: liste_commandes.php'); exit;
@@ -45,7 +45,7 @@ $tousStatuts = ['en attente','confirmée','expédiée','livrée','annulée'];
         <a href="tableau_de_bord.php" class="btn btn-outline-secondary btn-sm"><i class="bi bi-arrow-left"></i> Dashboard</a>
     </div>
 
-    <!-- Filtres -->
+    
     <div class="card border-0 shadow-sm mb-4">
         <div class="card-body">
             <form method="GET" class="row g-2 align-items-end">
@@ -71,7 +71,7 @@ $tousStatuts = ['en attente','confirmée','expédiée','livrée','annulée'];
         </div>
     </div>
 
-    <!-- Stats -->
+  
     <div class="row g-3 mb-4">
         <?php foreach ($stats as $st): ?>
         <div class="col-md-2 col-sm-4">
@@ -84,7 +84,7 @@ $tousStatuts = ['en attente','confirmée','expédiée','livrée','annulée'];
         <?php endforeach; ?>
     </div>
 
-    <!-- Tableau -->
+  
     <div class="card border-0 shadow-sm">
         <div class="card-body p-0">
             <?php if (empty($commandes)): ?>

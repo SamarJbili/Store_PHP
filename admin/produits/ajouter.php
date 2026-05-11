@@ -4,7 +4,7 @@ require_once '../../includes/session.php';
 Verifier_admin();
 require_once '../../Produit.class.php';
 
-/* Récupérer les catégories */
+
 $p   = new Produit();
 $res = $p->listeCategories();
 $categories = $res->fetchAll(PDO::FETCH_ASSOC);
@@ -19,7 +19,7 @@ if (isset($_POST['envoyer'])) {
     $p->id_categorie = $_POST['id_categorie'];
     $p->image        = '';
 
-    /* Upload image */
+   
     if (isset($_FILES['image']) && $_FILES['image']['error'] === 0) {
         $extensions = ['jpg','jpeg','png','webp'];
         $ext        = strtolower(pathinfo($_FILES['image']['name'], PATHINFO_EXTENSION));
@@ -42,5 +42,4 @@ if (isset($_POST['envoyer'])) {
     }
 }
 
-/* Afficher le formulaire */
 require_once 'ajouterForm.php';

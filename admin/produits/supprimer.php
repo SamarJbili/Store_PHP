@@ -14,7 +14,6 @@ if (!$data) { header("location:../tableau_de_bord.php"); exit(); }
 $produit = $data[0];
 
 if (isset($_POST['confirmer'])) {
-    /* Supprimer l'image du serveur */
     if ($produit['image']) {
         $chemin = '../../images/produits/' . $produit['image'];
         if (file_exists($chemin)) unlink($chemin);
@@ -29,5 +28,4 @@ if (isset($_POST['annuler'])) {
     exit();
 }
 
-/* Afficher le formulaire */
 require_once 'supprimerForm.php';

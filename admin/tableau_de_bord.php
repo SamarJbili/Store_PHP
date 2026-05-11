@@ -17,7 +17,7 @@ $message = $_GET['message'] ?? '';
     <title>Administration</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        /* Style Minimaliste Noir & Blanc */
+        
         body { background: #ffffff; color: #000000; font-family: 'Inter', sans-serif; }
         .admin-wrapper { max-width: 1100px; margin: 40px auto; }
         
@@ -35,7 +35,6 @@ $message = $_GET['message'] ?? '';
         
         .status { font-size: 0.8rem; font-weight: bold; color: #000; }
         
-        /* Image sans filtre grayscale pour garder les couleurs d'origine */
         img.prod-img { width: 50px; height: 50px; object-fit: cover; border: 1px solid #eee; }
         
         .text-muted { color: #666 !important; }

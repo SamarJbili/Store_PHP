@@ -11,12 +11,10 @@
     <div class="row justify-content-center">
         <div class="col-md-4 text-center">
             
-            <!-- Lien de retour simple -->
             <a href="../tableau_de_bord.php" class="text-decoration-none text-muted small">← Retour au tableau de bord</a>
 
             <div class="card shadow-sm border-0 mt-3 p-4">
                 
-                <!-- Image ou icône -->
                 <div class="mb-3">
                     <?php if ($produit['image']): ?>
                         <img src="../../images/produits/<?= htmlspecialchars($produit['image']) ?>" class="rounded" style="width: 100px; height: 100px; object-fit: cover;">
@@ -30,7 +28,6 @@
 
                 <p class="text-danger fw-bold my-3">Voulez-vous vraiment supprimer ce produit ?</p>
 
-                <!-- Formulaire simplifié -->
                 <form method="POST" action="supprimer.php?id=<?= $id ?>">
                     <div class="d-grid gap-2">
                         <button type="submit" name="confirmer" class="btn btn-danger">Oui, supprimer définitivement</button>

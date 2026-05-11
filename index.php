@@ -7,7 +7,6 @@ $p = new Produit();
 $res = $p->listeProduits();
 $tousLesProduits = $res->fetchAll(PDO::FETCH_ASSOC);
 
-// On prend les 4 premiers pour l'affichage
 $produitsAffiches = array_slice($tousLesProduits, 0, 4);
 ?>
 <!DOCTYPE html>
@@ -16,7 +15,6 @@ $produitsAffiches = array_slice($tousLesProduits, 0, 4);
     <meta charset="UTF-8">
     <title>Ma Boutique Simple</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Icônes simples -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <style>
         .product-card img { height: 250px; object-fit: cover; }
@@ -27,7 +25,6 @@ $produitsAffiches = array_slice($tousLesProduits, 0, 4);
 
 <?php include 'includes/navbar.php'; ?>
 
-<!-- 1. HERO SECTION -->
 <header class="hero text-center">
     <div class="container">
         <h1 class="display-4">Nouvelle Collection <?php echo date('Y'); ?></h1>
@@ -38,7 +35,6 @@ $produitsAffiches = array_slice($tousLesProduits, 0, 4);
 
 <main class="container">
     
-    <!-- 2. FILTRE RAPIDE -->
     <section class="row mb-5 g-3">
         <div class="col-md-8">
             <form action="boutique.php" method="GET" class="d-flex gap-2">
@@ -52,7 +48,7 @@ $produitsAffiches = array_slice($tousLesProduits, 0, 4);
         </div>
     </section>
 
-    <!-- 3. AFFICHAGE DES PRODUITS -->
+    
     <section>
         <h2 class="mb-4">Nos Nouveautés</h2>
         <div class="row row-cols-1 row-cols-md-4 g-4">
@@ -83,7 +79,7 @@ $produitsAffiches = array_slice($tousLesProduits, 0, 4);
 
 </main>
 
-<!-- 4. FOOTER SIMPLE -->
+
 <footer class="bg-dark text-white mt-5 py-4">
     <div class="container text-center">
         <p class="mb-1 fw-bold">SESHOP</p>

@@ -1,22 +1,21 @@
 <?php
-// Commande.class.php
 require_once 'connexion.php';
 
 class Commande {
 
-    private $pdo;
+    public $id_commande;
+    public $id_utilisateur;
+    public $date_commande;
+    public $statut;
+    public $adresse_livraison;
+    public $total;
 
-    public function __construct() {
+    public function creerCommande($id_utilisateur, $adresse, $total, $panier) {
         $cnx = new connexion();
-        $this->pdo = $cnx->CNXbase();
-    }
-
-    /* Créer une commande + ses lignes en une transaction */
-    public function creerCommande(int $id_utilisateur, string $adresse, float $total, array $panier): int {
-        $this->pdo->beginTransaction();
+        $pdo = $cnx->CNXbase();
+        $pdo->beginTransaction();
         try {
-            // 1. Insérer la commande
-            $stmt = $this->pdo->prepare("
+            $stmt = $pdo->prepare("
                 INSERT INTO commandes (id_utilisateur, date_commande, statut, adresse_livraison, total)
                 VALUES (:id_utilisateur, NOW(), 'en attente', :adresse, :total)
             ");
@@ -25,10 +24,9 @@ class Commande {
                 ':adresse'        => $adresse,
                 ':total'          => $total,
             ]);
-            $id_commande = intval($this->pdo->lastInsertId());
+            $id_commande = intval($pdo->lastInsertId());
 
-            // 2. Insérer les lignes
-            $stmtLigne = $this->pdo->prepare("
+            $stmtLigne = $pdo->prepare("
                 INSERT INTO lignes_commande (id_commande, id_produit, quantite, prix_unitaire)
                 VALUES (:id_commande, :id_produit, :quantite, :prix_unitaire)
             ");
@@ -40,18 +38,18 @@ class Commande {
                     ':prix_unitaire' => floatval($item['prix']),
                 ]);
             }
-
-            $this->pdo->commit();
+            $pdo->commit();
             return $id_commande;
 
         } catch (Exception $e) {
-            $this->pdo->rollBack();
+            $pdo->rollBack();
             throw $e;
         }
     }
 
-    /* Liste toutes les commandes (admin) */
-    public function listeCommandes(string $statut = '', string $search = ''): array {
+    public function listeCommandes($statut = '', $search = '') {
+        $cnx = new connexion();
+        $pdo = $cnx->CNXbase();
         $where  = [];
         $params = [];
 
@@ -73,14 +71,15 @@ class Commande {
              . ($where ? ' WHERE ' . implode(' AND ', $where) : '')
              . " ORDER BY c.date_commande DESC";
 
-        $stmt = $this->pdo->prepare($sql);
+        $stmt = $pdo->prepare($sql);
         $stmt->execute($params);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    /* Détail d'une commande */
-    public function getCommande(int $id): ?array {
-        $stmt = $this->pdo->prepare("
+    public function getCommande($id) {
+        $cnx = new connexion();
+        $pdo = $cnx->CNXbase();
+        $stmt = $pdo->prepare("
             SELECT c.*, u.nom, u.email
             FROM commandes c
             JOIN utilisateurs u ON u.id_utilisateur = c.id_utilisateur
@@ -91,9 +90,10 @@ class Commande {
         return $row ?: null;
     }
 
-    /* Lignes d'une commande */
-    public function getLignes(int $id_commande): array {
-        $stmt = $this->pdo->prepare("
+    public function getLignes($id_commande) {
+        $cnx = new connexion();
+        $pdo = $cnx->CNXbase();
+        $stmt = $pdo->prepare("
             SELECT l.quantite, l.prix_unitaire, p.nom, p.image
             FROM lignes_commande l
             JOIN produits p ON p.id_produit = l.id_produit
@@ -103,21 +103,23 @@ class Commande {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    /* Changer le statut d'une commande */
-    public function changerStatut(int $id_commande, string $statut): void {
+    public function changerStatut($id_commande, $statut) {
+        $cnx = new connexion();
+        $pdo = $cnx->CNXbase();
         $statutsValides = ['en attente','confirmée','expédiée','livrée','annulée'];
         if (!in_array($statut, $statutsValides)) {
             throw new InvalidArgumentException("Statut invalide : $statut");
         }
-        $stmt = $this->pdo->prepare("
+        $stmt = $pdo->prepare("
             UPDATE commandes SET statut = :statut WHERE id_commande = :id
         ");
         $stmt->execute([':statut' => $statut, ':id' => $id_commande]);
     }
 
-    /* Statistiques par statut (admin) */
-    public function statsParStatut(): array {
-        $stmt = $this->pdo->query("
+    public function statsParStatut() {
+        $cnx = new connexion();
+        $pdo = $cnx->CNXbase();
+        $stmt = $pdo->query("
             SELECT statut, COUNT(*) as nb, SUM(total) as ca
             FROM commandes GROUP BY statut
         ");

@@ -13,7 +13,6 @@ $data    = $res->fetchAll(PDO::FETCH_ASSOC);
 if (!$data) { header("location:../tableau_de_bord.php"); exit(); }
 $produit = $data[0];
 
-/* Catégories */
 $resCat     = $p->listeCategories();
 $categories = $resCat->fetchAll(PDO::FETCH_ASSOC);
 
@@ -28,7 +27,6 @@ if (isset($_POST['envoyer'])) {
     $photo           = $_FILES['image']['name'];
 
     if ($photo == "") {
-        /* Garder l'ancienne image */
         $p->modifierProduitSansImage($id);
         header('location:../tableau_de_bord.php?message=Produit+modifié+avec+succès&type=success');
         exit();
@@ -44,7 +42,7 @@ if (isset($_POST['envoyer'])) {
             $dossier  = '../../images/produits/';
             if (!is_dir($dossier)) mkdir($dossier, 0755, true);
             move_uploaded_file($_FILES['image']['tmp_name'], $dossier . $p->image);
-            /* Supprimer l'ancienne image */
+            
             if ($produit['image'] && file_exists($dossier . $produit['image'])) {
                 unlink($dossier . $produit['image']);
             }
@@ -55,5 +53,4 @@ if (isset($_POST['envoyer'])) {
     }
 }
 
-/* Afficher le formulaire */
 require_once 'modifierForm.php';

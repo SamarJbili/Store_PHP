@@ -11,7 +11,6 @@ session_start();
         body { background: #ffffff; color: #000000; font-family: 'Inter', sans-serif; }
         .contact-container { max-width: 800px; margin: 60px auto; }
         
-        /* Style des champs sans texte d'exemple */
         .form-control {
             border-radius: 0;
             border: 1px solid #000;

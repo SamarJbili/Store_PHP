@@ -3,18 +3,16 @@ require_once 'connexion.php';
 
 class Panier {
 
-    private $pdo;
+    public $id_panier;
+    public $id_utilisateur;
+    public $id_produit;
+    public $quantite;
+    public $date_ajout;
 
-    public function __construct() {
-        $cnx = new connexion();
-        $this->pdo = $cnx->CNXbase();
-    }
-
-    /* -------------------------------------------------------
-       Charger le panier depuis la BDD → dans $_SESSION['panier']
-    ------------------------------------------------------- */
     public function chargerDepuisBDD($id_utilisateur) {
-        $stmt = $this->pdo->prepare("
+        $cnx = new connexion();
+        $pdo = $cnx->CNXbase();
+        $stmt = $pdo->prepare("
             SELECT p.id_produit, pr.nom, pr.prix, pr.image, p.quantite
             FROM panier p
             JOIN produits pr ON pr.id_produit = p.id_produit
@@ -36,12 +34,10 @@ class Panier {
         }
     }
 
-    /* -------------------------------------------------------
-       Ajouter ou mettre à jour un article
-    ------------------------------------------------------- */
     public function ajouterOuMettreAJour($id_utilisateur, $id_produit, $quantite) {
-        // INSERT si n'existe pas, UPDATE quantite si existe déjà
-        $stmt = $this->pdo->prepare("
+        $cnx = new connexion();
+        $pdo = $cnx->CNXbase();
+        $stmt = $pdo->prepare("
             INSERT INTO panier (id_utilisateur, id_produit, quantite, date_ajout)
             VALUES (:id_utilisateur, :id_produit, :quantite, NOW())
             ON DUPLICATE KEY UPDATE
@@ -55,15 +51,14 @@ class Panier {
         ]);
     }
 
-    /* -------------------------------------------------------
-       Modifier la quantité exacte d'un article
-    ------------------------------------------------------- */
     public function modifierQuantite($id_utilisateur, $id_produit, $quantite) {
         if (intval($quantite) <= 0) {
             $this->supprimer($id_utilisateur, $id_produit);
             return;
         }
-        $stmt = $this->pdo->prepare("
+        $cnx = new connexion();
+        $pdo = $cnx->CNXbase();
+        $stmt = $pdo->prepare("
             UPDATE panier SET quantite = :quantite
             WHERE id_utilisateur = :id_utilisateur AND id_produit = :id_produit
         ");
@@ -74,11 +69,10 @@ class Panier {
         ]);
     }
 
-    /* -------------------------------------------------------
-       Supprimer un article
-    ------------------------------------------------------- */
     public function supprimer($id_utilisateur, $id_produit) {
-        $stmt = $this->pdo->prepare("
+        $cnx = new connexion();
+        $pdo = $cnx->CNXbase();
+        $stmt = $pdo->prepare("
             DELETE FROM panier
             WHERE id_utilisateur = :id_utilisateur AND id_produit = :id_produit
         ");
@@ -88,11 +82,10 @@ class Panier {
         ]);
     }
 
-    /* -------------------------------------------------------
-       Vider tout le panier
-    ------------------------------------------------------- */
     public function vider($id_utilisateur) {
-        $stmt = $this->pdo->prepare("
+        $cnx = new connexion();
+        $pdo = $cnx->CNXbase();
+        $stmt = $pdo->prepare("
             DELETE FROM panier WHERE id_utilisateur = :id_utilisateur
         ");
         $stmt->execute([':id_utilisateur' => intval($id_utilisateur)]);

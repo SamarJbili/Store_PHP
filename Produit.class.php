@@ -1,12 +1,8 @@
 <?php
-// ================================================
-// Produit.class.php - Style TP3
-// Attributs public, connexion dans chaque méthode
-// ================================================
+
 
 class Produit
 {
-    /* attributs de la classe */
     public $id_produit;
     public $nom;
     public $description;

@@ -1,12 +1,9 @@
 <?php
-// ================================================
-// Utilisateur.class.php - Style TP3
-// Attributs public, connexion dans chaque méthode
-// ================================================
+
 
 class Utilisateur
 {
-    /* attributs de la classe */
+    
     public $id_utilisateur;
     public $nom;
     public $prenom;
